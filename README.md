@@ -1,2 +1,3 @@
-# inventory_application
-Express app based on the Odin Project exercise - 'Mini Message Board'
+# Inventory Application
+
+Express app based on the Odin Project exercise - 'Inventory Application'
