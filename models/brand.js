@@ -7,6 +7,10 @@ const BrandSchema = new Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
 });
 
 BrandSchema.virtual("url").get(function () {

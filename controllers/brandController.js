@@ -1,7 +1,12 @@
 const Brand = require("../models/brand");
 
-const brandList = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const brandList = function (req, res, next) {
+  Brand.find()
+    .sort({ name: 1 })
+    .exec(function (err, listBrands) {
+      if (err) return next(err);
+      res.render("brandList", { title: "Brand List", brandList: listBrands });
+    });
 };
 
 const brandDetail = function (req, res) {
