@@ -1,4 +1,7 @@
+const async = require("async");
+
 const Category = require("../models/category");
+const Item = require("../models/item");
 
 const categoryList = function (req, res, next) {
   Category.find().exec(function (err, listCategories) {
@@ -10,8 +13,29 @@ const categoryList = function (req, res, next) {
   });
 };
 
-const categoryDetail = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const categoryDetail = function (req, res, next) {
+  async.parallel(
+    {
+      category: function (callback) {
+        Category.findById(req.params.id).exec(callback);
+      },
+      categoryItems: function (callback) {
+        Item.find({ category: req.params.id }).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) return next(err);
+      if (!results?.category) {
+        var err = new Error("Category not found");
+        err.status = 404;
+        return next(err);
+      }
+      res.render("categoryDetail", {
+        title: results.category.name,
+        categoryItems: results.categoryItems,
+      });
+    }
+  );
 };
 
 const categoryCreateGet = function (req, res) {
