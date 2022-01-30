@@ -1,0 +1,29 @@
+extends layout
+
+block navItems
+  +link('/browse', 'Home')
+  +link('/browse/items', 'All items')
+  +link('/browse/brands', 'All brands')
+  +link('/browse/categories', 'All categories')
+  li(class='nav-item w-50 p-1')
+    hr(class="text-white")
+  +link('/browse/brand/create', 'Create new brand')
+  +link('/browse/category/create', 'Create new category')
+  +link('/browse/item/create', 'Create new item')
+
+block content
+  h1= title
+
+  p #[strong Released Date:] #{item.released_date_formatted}
+  p #[strong Description:] #{item.description}
+  p #[strong Brand:]
+    |
+    |
+    a(href=item.brand.url) #{item.brand.name}
+  p #[strong Category:]
+    |
+    |
+    each val, index in item.category
+      a(href=val.url) #{val.name}
+      if index < item.category.length - 1
+        |,

@@ -14,8 +14,14 @@ const itemList = function (req, res, next) {
     });
 };
 
-const itemDetail = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const itemDetail = function (req, res, next) {
+  Item.findById(req.params.id)
+    .populate("brand")
+    .populate("category")
+    .exec(function (err, item) {
+      if (err) next(err);
+      res.render("itemDetail", { title: item.name, item: item });
+    });
 };
 
 const itemCreateGet = function (req, res) {
