@@ -1,7 +1,7 @@
 const Item = require("../models/item");
 
 const itemIndex = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+  res.render("index", { title: "Homepage" });
 };
 
 const itemList = function (req, res) {

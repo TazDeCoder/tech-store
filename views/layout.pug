@@ -1,7 +1,38 @@
 doctype html
-html
+html(lang="en")
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    meta(charset='utf-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    link(rel='stylesheet' href='/stylesheets/style.css')
   body
-    block content
+    nav(class='navbar navbar-expand-md navbar-dark bg-dark')
+      div(class="container-fluid")
+        a(class="navbar-brand p-2 fs-2") Tech Store
+        button(class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar")
+          span(class="navbar-toggler-icon")
+        block nav
+        div(class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar")
+          ul(class='navbar-nav nav-pills justify-content-center align-items-center p-2 text-center')
+            li(class='nav-item w-50 p-1')
+              a(class='nav-link active' href='/browse') Home
+            li(class='nav-item w-50 p-1')
+              a(class='nav-link' href='/browse/items') All items
+            li(class='nav-item w-50 p-1')
+              a(class='nav-link' href='/browse/brands') All brands
+            li(class='nav-item w-50 p-1')
+              a(class='nav-link' href='/browse/categories') All categories
+            li(class='nav-item w-50 p-1')
+              hr(class="text-white")      
+            li(class='nav-item w-50 p-1')
+              a(class='nav-link' href='/browse/brand/create') Create new brand
+            li(class='nav-item w-50 p-1')
+              a(class='nav-link' href='/browse/category/create') Create new category
+            li(class='nav-item w-50 p-1')
+              a(class='nav-link' href='/browse/item/create') Create new item  
+
+    div(class='container-fluid mt-3')
+        block content
