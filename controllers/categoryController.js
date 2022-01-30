@@ -1,7 +1,13 @@
 const Category = require("../models/category");
 
-const categoryList = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const categoryList = function (req, res, next) {
+  Category.find().exec(function (err, listCategories) {
+    if (err) return next(err);
+    res.render("categoryList", {
+      title: "Category List",
+      categoryList: listCategories,
+    });
+  });
 };
 
 const categoryDetail = function (req, res) {

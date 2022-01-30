@@ -1,0 +1,22 @@
+extends layout
+
+block navItems
+  +link('/browse', 'Home')
+  +link('/browse/items', 'All items')
+  +link('/browse/brands', 'All brands')
+  +link('/browse/categories', 'All categories', true)
+  li(class='nav-item w-50 p-1')
+    hr(class="text-white")
+  +link('/browse/brand/create', 'Create new brand')
+  +link('/browse/category/create', 'Create new category')
+  +link('/browse/item/create', 'Create new item') 
+
+block content
+  h1= title 
+
+  ul(class="p-3")
+  each category in categoryList  
+    li(class="m-3 list-unstyled fs-1 text-center")  
+      a(href=category.url) #{category.name}
+  else
+    li There are no categories.
