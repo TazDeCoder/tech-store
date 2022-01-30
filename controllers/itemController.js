@@ -4,8 +4,14 @@ const itemIndex = function (req, res) {
   res.render("index", { title: "Homepage" });
 };
 
-const itemList = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const itemList = function (req, res, next) {
+  Item.find({}, "name description brand")
+    .sort({ name: 1 })
+    .populate("brand")
+    .exec(function (err, listItems) {
+      if (err) return next(err);
+      res.render("itemList", { title: "Item List", itemList: listItems });
+    });
 };
 
 const itemDetail = function (req, res) {

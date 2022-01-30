@@ -14,25 +14,12 @@ html(lang="en")
         a(class="navbar-brand p-2 fs-2") Tech Store
         button(class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar")
           span(class="navbar-toggler-icon")
-        block nav
         div(class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar")
           ul(class='navbar-nav nav-pills justify-content-center align-items-center p-2 text-center')
-            li(class='nav-item w-50 p-1')
-              a(class='nav-link active' href='/browse') Home
-            li(class='nav-item w-50 p-1')
-              a(class='nav-link' href='/browse/items') All items
-            li(class='nav-item w-50 p-1')
-              a(class='nav-link' href='/browse/brands') All brands
-            li(class='nav-item w-50 p-1')
-              a(class='nav-link' href='/browse/categories') All categories
-            li(class='nav-item w-50 p-1')
-              hr(class="text-white")      
-            li(class='nav-item w-50 p-1')
-              a(class='nav-link' href='/browse/brand/create') Create new brand
-            li(class='nav-item w-50 p-1')
-              a(class='nav-link' href='/browse/category/create') Create new category
-            li(class='nav-item w-50 p-1')
-              a(class='nav-link' href='/browse/item/create') Create new item  
+            mixin link(href, title, active = false)
+              li(class='nav-item w-50 p-1')
+                a(class=`nav-link ${active ? 'active aria-current="page"' : ''}` href=href)= title
+            block navItems  
 
     div(class='container-fluid mt-3')
         block content

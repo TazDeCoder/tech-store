@@ -1,0 +1,25 @@
+extends layout
+
+block navItems
+  +link('/browse', 'Home')
+  +link('/browse/items', 'All items', true)
+  +link('/browse/brands', 'All brands')
+  +link('/browse/categories', 'All categories')
+  li(class='nav-item w-50 p-1')
+    hr(class="text-white")
+  +link('/browse/brand/create', 'Create new brand')
+  +link('/browse/category/create', 'Create new category')
+  +link('/browse/item/create', 'Create new item')     
+
+block content  
+  h1= title 
+
+  ul(class="p-3")
+    each item in itemList  
+      li(class="list-unstyled")  
+        a(href=item.url) #{item.name}
+        |  (#[strong #{item.brand.name}]) 
+        | 
+        p(class="w-90") #{item.description}
+    else
+      li There are no items.
