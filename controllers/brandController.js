@@ -83,12 +83,56 @@ const brandCreatePost = [
   },
 ];
 
-const brandDeleteGet = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const brandDeleteGet = function (req, res, next) {
+  async.parallel(
+    {
+      brand: function (callback) {
+        Brand.findById(req.params.id).exec(callback);
+      },
+      brandItems: function (callback) {
+        Item.find({ brand: req.params.id }).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) return next(err);
+      res.render("brandDelete", {
+        title: `Delete Brand: ${results.brand.name}`,
+        brand: results.brand,
+        brandItems: results.brandItems,
+      });
+    }
+  );
 };
 
-const brandDeletePost = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const brandDeletePost = function (req, res, next) {
+  async.parallel(
+    {
+      brand: function (callback) {
+        Brand.findById(req.params.id).exec(callback);
+      },
+      brandItems: function (callback) {
+        Item.find({ brand: req.params.id }).exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) return next(err);
+      if (results.brandItems.length > 0) {
+        // Brand has items. Render in same way as for GET route
+        res.render("brandDelete", {
+          title: `Delete Brand: ${results.brand.name}`,
+          brand: results.brand,
+          brandItems: results.brandItems,
+        });
+        return;
+      } else {
+        // Brand has no items. Delete object and redirect to the list of brands
+        Brand.findByIdAndRemove(req.body.brandid, function deleteBrand(err) {
+          if (err) return next(err);
+          res.redirect("/browse/brands");
+        });
+      }
+    }
+  );
 };
 
 const brandUpdateGet = function (req, res) {

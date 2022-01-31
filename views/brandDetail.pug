@@ -15,8 +15,10 @@ block content
   h1= title
 
   p #{brand.description}
+  p #[strong Items:] #{brandItems.length}
 
   div(class='ml-1 mt-1')
+  
     h4 Items
 
     dl
@@ -25,4 +27,12 @@ block content
           a(href=item.url) #{item.name}
         dd #{item.description}
       else
-        p This author has no items.
+        p This brand has no items.
+
+  hr
+
+  p(class='mb-2')
+    a(href=brand.url+'/delete') Delete brand
+  
+  p(class='pb-5')
+    a(href=brand.url+'/update') Update brand

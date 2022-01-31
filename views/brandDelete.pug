@@ -1,0 +1,37 @@
+extends layout
+
+block navItems
+  +link('/browse', 'Home')
+  +link('/browse/items', 'All items')
+  +link('/browse/brands', 'All brands')
+  +link('/browse/categories', 'All categories')
+  li(class='nav-item w-50 p-1')
+    hr(class="text-white")
+  +link('/browse/brand/create', 'Create new brand')
+  +link('/browse/category/create', 'Create new category')
+  +link('/browse/item/create', 'Create new item')
+
+block content
+  h1= title
+
+  if brandItems.length
+    p #[strong Delete the following items before attempting to delete this brand]
+
+    div(class='ml-2 mt-2')
+
+      h4 Items
+
+      dl
+      each item in brandItemsitem
+        dt
+          a(href=item.url) #{item.name}
+        dd #{item.description}
+  else
+    p Do you really want to delete this Brand?
+
+    form(method='POST' action='')
+      div(class='my-3')
+        label.form-label(class='invisible' for='brandid') Brand ID:
+        input#brandid.form-control(type='hidden' name='brandid' required='true' value=brand._id)
+
+      button.btn.btn-primary(type='submit') Delete
