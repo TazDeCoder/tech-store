@@ -1,0 +1,27 @@
+extends layout 
+
+block navItems
+  +link('/browse', 'Home')
+  +link('/browse/items', 'All items')
+  +link('/browse/brands', 'All brands')
+  +link('/browse/categories', 'All categories')
+  li(class='nav-item w-50 p-1')
+    hr(class="text-white")
+  +link('/browse/brand/create', 'Create new brand')
+  +link('/browse/category/create', 'Create new category', true)
+  +link('/browse/item/create', 'Create new item')
+
+block content
+  h1= title
+
+  form(method='POST' action='')
+    div(class='my-3')
+      label.form-label(for='name') Name:
+      input#name.form-control(type='text' value=(category ? category.name : '') placeholder='Name of Category' name='name' required='true')
+
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors
+    ul
+      for error in errors
+        li!= error.msg

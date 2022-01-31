@@ -1,0 +1,23 @@
+extends layout
+
+block navItems
+  +link('/browse', 'Home')
+  +link('/browse/items', 'All items')
+  +link('/browse/brands', 'All brands')
+  +link('/browse/categories', 'All categories')
+  li(class='nav-item w-50 p-1')
+    hr(class="text-white")
+  +link('/browse/brand/create', 'Create new brand')
+  +link('/browse/category/create', 'Create new category')
+  +link('/browse/item/create', 'Create new item')
+
+block content
+  h1= title
+
+  p Do you really want to delete this Item?
+    form(method='POST' action='')
+      div(class='my-3')
+        label.form-label(class='invisible' for='itemid') Item ID:
+        input#itemid.form-control(type='hidden' name='itemid' value=item._id required='true')
+
+      button.btn.btn-primary(type='submit') Delete

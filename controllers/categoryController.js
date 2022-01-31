@@ -1,4 +1,5 @@
 const async = require("async");
+const { body, validationResult } = require("express-validator");
 
 const Category = require("../models/category");
 const Item = require("../models/item");
@@ -39,12 +40,45 @@ const categoryDetail = function (req, res, next) {
 };
 
 const categoryCreateGet = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+  res.render("categoryForm", { title: "Create Category" });
 };
 
-const categoryCreatePost = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
-};
+const categoryCreatePost = [
+  // Validate and sanitise fields
+  body("name", "Name must not be empty.").trim().isLength({ min: 1 }).escape(),
+  // Process request after validation and sanitization
+  (req, res, next) => {
+    const errors = validationResult(req);
+    // Create category object
+    const category = new Category({
+      name: req.body.name,
+    });
+    // Check for any validation errors
+    if (!errors.isEmpty()) {
+      res.render("categoryForm", {
+        title: "Create Category",
+        category: category,
+        errors: errors.array(),
+      });
+    } else {
+      // Data provided is valid
+      // Check if Category with same name already exists
+      Category.findOne({ name: req.body.name }).exec(function (err, foundCatg) {
+        if (err) return next(err);
+        if (foundCatg)
+          // Category exists so redirect to its detail page
+          res.redirect(foundCatg.url);
+        else {
+          // Category doesn't exist. Save category to database
+          category.save(function (err) {
+            if (err) return next(err);
+            res.redirect(category.url);
+          });
+        }
+      });
+    }
+  },
+];
 
 const categoryDeleteGet = function (req, res) {
   res.send("NOT IMPLEMENTED YET");

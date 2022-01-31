@@ -124,12 +124,20 @@ const itemCreatePost = [
   },
 ];
 
-const itemDeleteGet = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const itemDeleteGet = function (req, res, next) {
+  Item.findById(req.params.id).exec(function (err, item) {
+    if (err) return next(err);
+    if (!item) res.redirect("/browse/items");
+    res.render("itemDelete", { title: item.name, item: item });
+  });
 };
 
-const itemDeletePost = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const itemDeletePost = function (req, res, next) {
+  // Delete object and redirect to the list of items
+  Item.findByIdAndRemove(req.body.itemid, function deleteItem(err) {
+    if (err) return next(err);
+    res.redirect("/browse/items");
+  });
 };
 
 const itemUpdateGet = function (req, res) {
