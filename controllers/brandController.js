@@ -1,4 +1,5 @@
 const async = require("async");
+const { body, validationResult } = require("express-validator");
 
 const Brand = require("../models/brand");
 const Item = require("../models/item");
@@ -39,12 +40,48 @@ const brandDetail = function (req, res, next) {
 };
 
 const brandCreateGet = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+  res.render("brandForm", { title: "Create Brand" });
 };
 
-const brandCreatePost = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
-};
+const brandCreatePost = [
+  // Validate and sanitise fields
+  body("name", "Name must not be empty.").trim().isLength({ min: 1 }).escape(),
+  body("description", "Description must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  // Process request after validation and sanitization
+  (req, res, next) => {
+    const errors = validationResult(req);
+    // Create brand object
+    const brand = new Brand({
+      name: req.body.name,
+      description: req.body.description,
+    });
+    // Check for any validation errors
+    if (!errors.isEmpty()) {
+      res.render("brandForm", {
+        title: "Brand Form",
+        brand: brand,
+      });
+      return;
+    } else {
+      // Data from form is valid
+      // Check if Brand with same name already exists
+      Brand.findOne({ name: req.body.name }).exec(function (err, foundBrand) {
+        if (err) return next(err);
+        if (foundBrand) res.redirect(foundBrand.url);
+        else {
+          // Brand saved. Redirect to brand detail page.
+          brand.save(function (err) {
+            if (err) return next(err);
+            res.redirect(brand.url);
+          });
+        }
+      });
+    }
+  },
+];
 
 const brandDeleteGet = function (req, res) {
   res.send("NOT IMPLEMENTED YET");
