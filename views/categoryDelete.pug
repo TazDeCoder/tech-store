@@ -14,11 +14,24 @@ block navItems
 block content
   h1= title
 
-  p Do you really want to delete this Item?
-  
+  if categoryItems.length
+    p #[strong Delete the following items before attempting to delete this category]
+
+    div(class='ml-2 mt-2')
+    
+      h4 Items
+
+      dl
+      each item in categoryItems
+        dt
+          a(href=item.url) #{item.name}
+        dd #{item.description}
+  else
+    p Do you really want to delete this Category?
+
     form(method='POST' action='')
       div(class='my-3')
-        label.form-label(class='invisible' for='itemid') Item ID:
-        input#itemid.form-control(type='hidden' name='itemid' value=item._id required='true')
+        label.form-label(class='invisible' for='categoryid') Category ID:
+        input#categoryid.form-control(type='hidden' name='categoryid' required='true' value=category._id)
 
       button.btn.btn-primary(type='submit') Delete
