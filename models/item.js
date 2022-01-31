@@ -18,7 +18,7 @@ const ItemSchema = new Schema({
   },
   number_in_stock: {
     type: Number,
-    required: true,
+    default: 0,
   },
   brand: {
     type: Schema.Types.ObjectId,

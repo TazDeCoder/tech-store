@@ -1,0 +1,54 @@
+extends layout 
+
+block navItems
+  +link('/browse', 'Home')
+  +link('/browse/items', 'All items')
+  +link('/browse/brands', 'All brands')
+  +link('/browse/categories', 'All categories')
+  li(class='nav-item w-50 p-1')
+    hr(class="text-white")
+  +link('/browse/brand/create', 'Create new brand')
+  +link('/browse/category/create', 'Create new category')
+  +link('/browse/item/create', 'Create new item', true)  
+
+block content
+  h1= title
+
+  form(method='POST' action='')
+    div(class='my-3')
+      label.form-label(for='name') Name:
+      input#name.form-control(type='text' value=(item ? item.name : '') placeholder='Name of item' name='name' required='true')
+
+    div(class='my-3')
+      label.form-label(for='brand') Brand:
+      select#brand.form-control(type='select' placeholder='Select brand' name='brand' required='true')
+        - brands.sort(function(a, b) {const textA = a.name.toUpperCase(); const textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+
+        for brand in brands
+          if item
+            option(value=brand._id selected=(brand._id.toString() === item.brand._id.toString() ? 'selected' : false)) #{brand.name}
+          else
+            option(value=brand._id) #{brand.name}
+
+    div(class='my-3')
+      label.form-label(for='description') Description:
+      textarea#description.form-control(class='form-control-lg' type='textarea' placeholder='Description' name='description' required='true') #{item ? item.description : ''}
+
+    div(class='my-3')
+      label.form-label(for='released_date') Released Date:
+      input#released_date.form-control(type='date' name='released_date' placeholder='dd/mm/yyyy' value=(item ? item.released_date : '') required='true')
+
+    div(class='my-3')
+      label.form-label Category:
+      div(class='d-flex align-items-center')
+        for category in categories
+          div(class='mx-2 d-flex align-items-center')
+            input.checkbox-input(class='mx-1' type='checkbox' name='category' id=category._id value=category._id checked=category.checked)
+            label(for=category._id) #{category.name}
+
+    button.btn.btn-primary(class='mb-3' type='submit') Submit
+
+  if errors
+    ul
+      for error in errors
+        li!= error.msg
