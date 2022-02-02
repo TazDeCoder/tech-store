@@ -135,13 +135,61 @@ const brandDeletePost = function (req, res, next) {
   );
 };
 
-const brandUpdateGet = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const brandUpdateGet = function (req, res, next) {
+  Brand.findById(req.params.id).exec(function (err, brand) {
+    if (err) return next(err);
+    res.render("brandForm", {
+      title: `Update Brand: ${brand.name}`,
+      brand: brand,
+    });
+  });
 };
 
-const brandUpdatePost = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
-};
+const brandUpdatePost = [
+  // Validate and sanitise fields
+  body("description", "Description must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  // Process request after validation and sanitization
+  (req, res, next) => {
+    const errors = validationResult(req);
+    // Create brand object
+    const brand = new Brand({
+      _id: req.params.id,
+      name: req.body.name,
+      description: req.body.description,
+    });
+    // Check for any validation errors
+    if (!errors.isEmpty()) {
+      res.render("brandForm", {
+        title: `Update Brand: ${brand.name}`,
+        brand: brand,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid
+      // Check if Brand with same name already exists
+      Brand.findOne({ name: req.body.name }).exec(function (err, foundBrand) {
+        if (err) return next(err);
+        if (foundBrand) res.redirect(foundBrand.url);
+        else {
+          // Brand saved. Redirect to brand detail page
+          Brand.findByIdAndUpdate(
+            req.params.id,
+            brand,
+            {},
+            function (err, brand) {
+              if (err) return next(err);
+              res.redirect(brand.url);
+            }
+          );
+        }
+      });
+    }
+  },
+];
 
 module.exports = {
   brandList,

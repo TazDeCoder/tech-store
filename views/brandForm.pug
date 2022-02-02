@@ -7,7 +7,10 @@ block navItems
   +link('/browse/categories', 'All categories')
   li(class='nav-item w-50 p-1')
     hr(class="text-white")
-  +link('/browse/brand/create', 'Create new brand', true)
+  if brand
+    +link('/browse/brand/create', 'Create new brand') 
+  else
+    +link('/browse/brand/create', 'Create new brand', true) 
   +link('/browse/category/create', 'Create new category')
   +link('/browse/item/create', 'Create new item')
 
@@ -15,9 +18,10 @@ block content
   h1= title
 
   form(method='POST' action='')
-    div(class='my-3')
-      label.form-label(for='name') Name:
-      input#name.form-control(type='text' value=(brand ? brand.name : '') placeholder='Name of Brand' name='name' required='true')
+    if(!brand)
+      div(class='my-3')
+        label.form-label(for='name') Name:
+        input#name.form-control(type='text' value=(brand ? brand.name : '') placeholder='Name of Brand' name='name' required='true')
         
     div(class='my-3')
       label.form-label(for='description') Description:
