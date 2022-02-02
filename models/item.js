@@ -1,4 +1,5 @@
 const intlFormat = require("date-fns/intlFormat");
+const formatISO = require("date-fns/formatISO");
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
@@ -42,6 +43,10 @@ ItemSchema.virtual("released_date_formatted").get(function () {
     month: "long",
     day: "numeric",
   });
+});
+
+ItemSchema.virtual("released_date_iso_formatted").get(function () {
+  return formatISO(this.released_date, { representation: "date" });
 });
 
 module.exports = mongoose.model("Item", ItemSchema);

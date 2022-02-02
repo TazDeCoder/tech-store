@@ -140,13 +140,126 @@ const itemDeletePost = function (req, res, next) {
   });
 };
 
-const itemUpdateGet = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const itemUpdateGet = function (req, res, next) {
+  async.parallel(
+    {
+      item: function (callback) {
+        Item.findById(req.params.id).exec(callback);
+      },
+      brands: function (callback) {
+        Brand.find(callback);
+      },
+      categories: function (callback) {
+        Category.find(callback);
+      },
+    },
+    function (err, results) {
+      if (err) return next(err);
+      if (!results?.item) {
+        const err = new Error("Item not found");
+        err.status = 404;
+        return next(err);
+      }
+      // Mark our selected categories as checked
+      for (let allCIter = 0; allCIter < results.categories.length; allCIter++) {
+        for (
+          let itemCIter = 0;
+          itemCIter < results.item.category.length;
+          itemCIter++
+        ) {
+          if (
+            results.categories[allCIter]._id.toString() ===
+            results.item.category[itemCIter]._id.toString()
+          ) {
+            results.categories[allCIter].checked = "true";
+          }
+        }
+      }
+      res.render("itemForm", {
+        title: `Update Item: ${results.item.name}`,
+        brands: results.brands,
+        categories: results.categories,
+        item: results.item,
+      });
+    }
+  );
 };
 
-const itemUpdatePost = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
-};
+const itemUpdatePost = [
+  // Convert the category to an array
+  (req, res, next) => {
+    if (!_.isArray(req.body.category)) {
+      if (typeof req.body.category === "undefined") req.body.category = [];
+      else req.body.category = [req.body.category];
+    }
+    next();
+  },
+  // Validate and sanitise fields
+  body("name", "Name must not be empty.").trim().isLength({ min: 1 }).escape(),
+  body("brand", "Brand must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("description", "Description must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("released_date", "Released Date must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("category.*").escape(),
+  // Process request after validation and sanitization
+  (req, res, next) => {
+    const errors = validationResult(req);
+    // Create item object
+    const item = new Item({
+      _id: req.params.id,
+      name: req.body.name,
+      brand: req.body.brand,
+      description: req.body.description,
+      released_date: req.body.released_date,
+      number_in_stock: req.body.stock,
+      category: req.body.category,
+    });
+    // Check for any validation errors
+    if (!errors.isEmpty()) {
+      async.parallel(
+        {
+          brands: function (callback) {
+            Brand.find(callback);
+          },
+          categories: function (callback) {
+            Category.find(callback);
+          },
+        },
+        function (err, results) {
+          if (err) return next(err);
+          // Mark our selected categories as checked
+          for (let i = 0; i < results.categories.length; i++) {
+            if (item.category.indexOf(results.categories[i]._id) > -1) {
+              results.categories[i].checked = "true";
+            }
+          }
+          res.render("itemForm", {
+            title: `Update Item: ${item.name}`,
+            brands: results.brands,
+            categories: results.categories,
+            item: item,
+            errors: errors.array(),
+          });
+        }
+      );
+      return;
+    } else {
+      // Data provided is valid. Save item to database
+      Item.findByIdAndUpdate(req.params.id, item, {}, function (err, item) {
+        if (err) return next(err);
+        res.redirect(item.url);
+      });
+    }
+  },
+];
 
 module.exports = {
   itemIndex,

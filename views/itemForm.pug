@@ -9,12 +9,20 @@ block navItems
     hr(class="text-white")
   +link('/browse/brand/create', 'Create new brand')
   +link('/browse/category/create', 'Create new category')
-  +link('/browse/item/create', 'Create new item', true)  
+  if item
+    +link('/browse/item/create', 'Create new item')
+  else   
+    +link('/browse/item/create', 'Create new item', true)
 
 block content
   h1= title
 
   form(method='POST' action='')
+    if item
+      div(class='my-3')
+        label.form-label(for='stock') Stock:
+        input#stock.form-control(type='number' value=(item ? item.number_in_stock : '') name='stock' required='true')
+
     div(class='my-3')
       label.form-label(for='name') Name:
       input#name.form-control(type='text' value=(item ? item.name : '') placeholder='Name of item' name='name' required='true')
@@ -36,7 +44,7 @@ block content
 
     div(class='my-3')
       label.form-label(for='released_date') Released Date:
-      input#released_date.form-control(type='date' name='released_date' placeholder='dd/mm/yyyy' value=(item ? item.released_date : '') required='true')
+      input#released_date.form-control(type='date' name='released_date' placeholder='dd/mm/yyyy' value=(item ? item.released_date_iso_formatted : '') required='true')
 
     div(class='my-3')
       label.form-label Category:
