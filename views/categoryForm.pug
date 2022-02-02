@@ -8,7 +8,10 @@ block navItems
   li(class='nav-item w-50 p-1')
     hr(class="text-white")
   +link('/browse/brand/create', 'Create new brand')
-  +link('/browse/category/create', 'Create new category', true)
+  if category
+    +link('/browse/category/create', 'Create new category')
+  else
+    +link('/browse/category/create', 'Create new category', true)
   +link('/browse/item/create', 'Create new item')
 
 block content

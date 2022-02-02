@@ -137,13 +137,48 @@ const categoryDeletePost = function (req, res, next) {
   );
 };
 
-const categoryUpdateGet = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
+const categoryUpdateGet = function (req, res, next) {
+  Category.findById(req.params.id).exec(function (err, category) {
+    if (err) return next(err);
+    res.render("categoryForm", {
+      title: "Update category",
+      category: category,
+    });
+  });
 };
 
-const categoryUpdatePost = function (req, res) {
-  res.send("NOT IMPLEMENTED YET");
-};
+const categoryUpdatePost = [
+  // Validate and sanitise fields
+  body("name", "Name must not be empty.").trim().isLength({ min: 1 }).escape(),
+  // Process request after validation and sanitization
+  (req, res, next) => {
+    const errors = validationResult(req);
+    // Create category object
+    const category = new Category({
+      _id: req.params.id,
+      name: req.body.name,
+    });
+    // Check for any validation errors
+    if (!errors.isEmpty()) {
+      res.render("categoryForm", {
+        title: "Update Category",
+        category: category,
+        errors: errors.array(),
+      });
+    } else {
+      // Data provided is valid. Update category
+      Category.findByIdAndUpdate(
+        req.params.id,
+        category,
+        {},
+        function (err, category) {
+          if (err) return next(err);
+          res.redirect(category.url);
+        }
+      );
+    }
+  },
+];
 
 module.exports = {
   categoryList,
