@@ -29,3 +29,25 @@ iframe {
    max-width: 100%;
    height: auto;
 }
+
+/*
+================================
+ Content
+ 
+================================
+*/
+
+/* Form */
+.form-item {
+  max-width: 40rem;
+}
+.form-item input[type="text"],
+.form-item input[type="date"] {
+  max-width: 25rem;
+}
+.form-item select {
+  max-width: 20rem;
+}
+.form-item textarea {
+  height: 12rem;
+}

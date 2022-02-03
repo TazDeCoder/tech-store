@@ -1,15 +1,9 @@
 extends ../layout
 
-block navItems
-  +link('/', 'Home')
+block navItemsGroupOne
   +link('/browse/items', 'All items', true)
   +link('/browse/brands', 'All brands')
-  +link('/browse/categories', 'All categories')
-  li(class='nav-item w-50 p-1')
-    hr(class="text-white")
-  +link('/browse/brand/create', 'Create new brand')
-  +link('/browse/category/create', 'Create new category')
-  +link('/browse/item/create', 'Create new item')     
+  +link('/browse/categories', 'All categories')   
 
 block content  
   h1(class="fw-light") #{title} (#[strong #{itemCount}])

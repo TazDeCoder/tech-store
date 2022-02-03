@@ -1,12 +1,6 @@
 extends ../layout
 
-block navItems
-  +link('/', 'Home')
-  +link('/browse/items', 'All items')
-  +link('/browse/brands', 'All brands')
-  +link('/browse/categories', 'All categories')
-  li(class='nav-item w-50 p-1')
-    hr(class="text-white")
+block navItemsGroupTwo
   if brand
     +link('/browse/brand/create', 'Create new brand') 
   else

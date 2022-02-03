@@ -1,16 +1,5 @@
 extends layout
 
-block navItems
-  +link('/', 'Home', true)
-  +link('/browse/items', 'All items')
-  +link('/browse/brands', 'All brands')
-  +link('/browse/categories', 'All categories')
-  li(class='nav-item w-50 p-1')
-    hr(class="text-white")
-  +link('/browse/brand/create', 'Create new brand')
-  +link('/browse/category/create', 'Create new category')
-  +link('/browse/item/create', 'Create new item') 
-
 block content
   h1(class="m-1 fs-1 fw-light")= title
 
