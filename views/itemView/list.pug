@@ -1,7 +1,7 @@
-extends layout
+extends ../layout
 
 block navItems
-  +link('/browse', 'Home')
+  +link('/', 'Home')
   +link('/browse/items', 'All items', true)
   +link('/browse/brands', 'All brands')
   +link('/browse/categories', 'All categories')
@@ -12,10 +12,10 @@ block navItems
   +link('/browse/item/create', 'Create new item')     
 
 block content  
-  h1= title 
+  h1(class="fw-light") #{title} (#[strong #{itemCount}])
 
   ul(class="p-3")
-    each item in itemList  
+    each item in listItems  
       li(class="list-unstyled")  
         a(href=item.url) #{item.name}
         |  (#[strong #{item.brand.name}]) 

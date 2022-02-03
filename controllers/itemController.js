@@ -1,32 +1,41 @@
+// Third-party libraries
 const async = require("async");
-const _ = require("lodash");
 const { body, validationResult } = require("express-validator");
-
+// Imported models
 const Item = require("../models/item");
 const Brand = require("../models/brand");
 const Category = require("../models/category");
 
-const itemIndex = function (req, res) {
-  res.render("index", { title: "Homepage" });
-};
-
 const itemList = function (req, res, next) {
-  Item.find({}, "name description brand")
-    .sort({ name: 1 })
-    .populate("brand")
-    .exec(function (err, listItems) {
+  async.parallel(
+    {
+      itemCount: function (callback) {
+        Item.countDocuments({}, callback);
+      },
+      listItems: function (callback) {
+        Item.find({}, "name description brand")
+          .sort({ name: 1 })
+          .populate("brand")
+          .exec(callback);
+      },
+    },
+    function (err, results) {
       if (err) return next(err);
-      res.render("itemList", { title: "Item List", itemList: listItems });
-    });
+      res.render("itemView/list", {
+        title: "All Items",
+        itemCount: results.itemCount,
+        listItems: results.listItems,
+      });
+    }
+  );
 };
 
 const itemDetail = function (req, res, next) {
   Item.findById(req.params.id)
-    .populate("brand")
-    .populate("category")
+    .populate("brand category")
     .exec(function (err, item) {
-      if (err) next(err);
-      res.render("itemDetail", { title: item.name, item: item });
+      if (err) return next(err);
+      res.render("itemView/detail", { title: item.name, item: item });
     });
 };
 
@@ -42,7 +51,7 @@ const itemCreateGet = function (req, res, next) {
     },
     function (err, results) {
       if (err) return next(err);
-      res.render("itemForm", {
+      res.render("itemView/form", {
         title: "Create Item",
         brands: results.brands,
         categories: results.categories,
@@ -54,7 +63,7 @@ const itemCreateGet = function (req, res, next) {
 const itemCreatePost = [
   // Convert the category to an array
   (req, res, next) => {
-    if (!_.isArray(req.body.category)) {
+    if (!Array.isArray(req.body.category)) {
       if (typeof req.body.category === "undefined") req.body.category = [];
       else req.body.category = [req.body.category];
     }
@@ -105,7 +114,7 @@ const itemCreatePost = [
               results.categories[i].checked = "true";
             }
           }
-          res.render("itemForm", {
+          res.render("itemView/form", {
             title: "Create Item",
             brands: results.brands,
             categories: results.categories,
@@ -127,8 +136,7 @@ const itemCreatePost = [
 const itemDeleteGet = function (req, res, next) {
   Item.findById(req.params.id).exec(function (err, item) {
     if (err) return next(err);
-    if (!item) res.redirect("/browse/items");
-    res.render("itemDelete", { title: item.name, item: item });
+    res.render("itemView/delete", { title: item.name, item: item });
   });
 };
 
@@ -155,28 +163,28 @@ const itemUpdateGet = function (req, res, next) {
     },
     function (err, results) {
       if (err) return next(err);
-      if (!results?.item) {
-        const err = new Error("Item not found");
-        err.status = 404;
-        return next(err);
-      }
+      if (!results?.item) res.redirect("/browse/items");
       // Mark our selected categories as checked
-      for (let allCIter = 0; allCIter < results.categories.length; allCIter++) {
+      for (
+        let allCatgIter = 0;
+        allCatgIter < results.categories.length;
+        allCatgIter++
+      ) {
         for (
-          let itemCIter = 0;
-          itemCIter < results.item.category.length;
-          itemCIter++
+          let itemCatgIter = 0;
+          itemCatgIter < results.item.category.length;
+          itemCatgIter++
         ) {
           if (
-            results.categories[allCIter]._id.toString() ===
-            results.item.category[itemCIter]._id.toString()
+            results.categories[allCatgIter]._id.toString() ===
+            results.item.category[itemCatgIter]._id.toString()
           ) {
-            results.categories[allCIter].checked = "true";
+            results.categories[allCatgIter].checked = "true";
           }
         }
       }
-      res.render("itemForm", {
-        title: `Update Item: ${results.item.name}`,
+      res.render("itemView/form", {
+        title: "Update Item",
         brands: results.brands,
         categories: results.categories,
         item: results.item,
@@ -188,7 +196,7 @@ const itemUpdateGet = function (req, res, next) {
 const itemUpdatePost = [
   // Convert the category to an array
   (req, res, next) => {
-    if (!_.isArray(req.body.category)) {
+    if (!Array.isArray(req.body.category)) {
       if (typeof req.body.category === "undefined") req.body.category = [];
       else req.body.category = [req.body.category];
     }
@@ -241,8 +249,8 @@ const itemUpdatePost = [
               results.categories[i].checked = "true";
             }
           }
-          res.render("itemForm", {
-            title: `Update Item: ${item.name}`,
+          res.render("itemView/form", {
+            title: "Update Item",
             brands: results.brands,
             categories: results.categories,
             item: item,
@@ -252,7 +260,7 @@ const itemUpdatePost = [
       );
       return;
     } else {
-      // Data provided is valid. Save item to database
+      // Data provided is valid. Update item
       Item.findByIdAndUpdate(req.params.id, item, {}, function (err, item) {
         if (err) return next(err);
         res.redirect(item.url);
@@ -262,7 +270,6 @@ const itemUpdatePost = [
 ];
 
 module.exports = {
-  itemIndex,
   itemList,
   itemDetail,
   itemCreateGet,

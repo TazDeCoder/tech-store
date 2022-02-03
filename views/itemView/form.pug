@@ -1,7 +1,7 @@
-extends layout 
+extends ../layout
 
 block navItems
-  +link('/browse', 'Home')
+  +link('/', 'Home')
   +link('/browse/items', 'All items')
   +link('/browse/brands', 'All brands')
   +link('/browse/categories', 'All categories')
@@ -19,15 +19,15 @@ block content
 
   form(method='POST' action='')
     if item
-      div(class='my-3')
+      div(class='form-item my-3')
         label.form-label(for='stock') Stock:
         input#stock.form-control(type='number' value=(item ? item.number_in_stock : '') name='stock' required='true')
 
-    div(class='my-3')
+    div(class='form-item my-3')
       label.form-label(for='name') Name:
       input#name.form-control(type='text' value=(item ? item.name : '') placeholder='Name of item' name='name' required='true')
 
-    div(class='my-3')
+    div(class='form-item my-3')
       label.form-label(for='brand') Brand:
       select#brand.form-control(type='select' placeholder='Select brand' name='brand' required='true')
         - brands.sort(function(a, b) {const textA = a.name.toUpperCase(); const textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
@@ -38,19 +38,19 @@ block content
           else
             option(value=brand._id) #{brand.name}
 
-    div(class='my-3')
+    div(class='form-item my-3')
       label.form-label(for='description') Description:
-      textarea#description.form-control(class='form-control-lg' type='textarea' placeholder='Description' name='description' required='true') #{item ? item.description : ''}
+      textarea#description.form-control(class='form-control-lg' type='textarea' placeholder='Write a brief item description' name='description' required='true') #{item ? item.description : ''}
 
-    div(class='my-3')
+    div(class='form-item my-3')
       label.form-label(for='released_date') Released Date:
       input#released_date.form-control(type='date' name='released_date' placeholder='dd/mm/yyyy' value=(item ? item.released_date_iso_formatted : '') required='true')
 
-    div(class='my-3')
+    div(class='form-item my-3')
       label.form-label Category:
-      div(class='d-flex align-items-center')
+      div
         for category in categories
-          div(class='mx-2 d-flex align-items-center')
+          div(class='mx-2')
             input.checkbox-input(class='mx-1' type='checkbox' name='category' id=category._id value=category._id checked=category.checked)
             label(for=category._id) #{category.name}
 
