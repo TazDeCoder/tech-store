@@ -1,17 +1,29 @@
+// Third-party libraries
 const async = require("async");
 const { body, validationResult } = require("express-validator");
-
+// Import models
 const Category = require("../models/category");
 const Item = require("../models/item");
 
 const categoryList = function (req, res, next) {
-  Category.find().exec(function (err, listCategories) {
-    if (err) return next(err);
-    res.render("categoryList", {
-      title: "Category List",
-      categoryList: listCategories,
-    });
-  });
+  async.parallel(
+    {
+      categoryCount: function (callback) {
+        Category.countDocuments({}, callback);
+      },
+      listCategories: function (callback) {
+        Category.find({}, "name").exec(callback);
+      },
+    },
+    function (err, results) {
+      if (err) return next(err);
+      res.render("categoryView/list", {
+        title: "All Categories",
+        categoryCount: results.categoryCount,
+        listCategories: results.listCategories,
+      });
+    }
+  );
 };
 
 const categoryDetail = function (req, res, next) {
@@ -31,7 +43,7 @@ const categoryDetail = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
-      res.render("categoryDetail", {
+      res.render("categoryView/detail", {
         title: results.category.name,
         category: results.category,
         categoryItems: results.categoryItems,
@@ -41,7 +53,7 @@ const categoryDetail = function (req, res, next) {
 };
 
 const categoryCreateGet = function (req, res) {
-  res.render("categoryForm", { title: "Create Category" });
+  res.render("categoryView/form", { title: "Create Category" });
 };
 
 const categoryCreatePost = [
@@ -56,7 +68,7 @@ const categoryCreatePost = [
     });
     // Check for any validation errors
     if (!errors.isEmpty()) {
-      res.render("categoryForm", {
+      res.render("categoryView/form", {
         title: "Create Category",
         category: category,
         errors: errors.array(),
@@ -94,7 +106,7 @@ const categoryDeleteGet = function (req, res, next) {
     function (err, results) {
       if (err) return next(err);
       if (!results?.category) res.redirect("/browse/categories");
-      res.render("categoryDelete", {
+      res.render("categoryView/delete", {
         title: `Delete Category: ${results.category.name}`,
         category: results.category,
         categoryItems: results.categoryItems,
@@ -107,18 +119,18 @@ const categoryDeletePost = function (req, res, next) {
   async.parallel(
     {
       category: function (callback) {
-        Category.findById(req.body.authorid).exec(callback);
+        Category.findById(req.body.categoryid).exec(callback);
       },
       categoryItems: function (callback) {
-        Item.find({ category: req.body.authorid }).exec(callback);
+        Item.find({ category: req.body.categoryid }).exec(callback);
       },
     },
     function (err, results) {
       if (err) return next(err);
       if (results.categoryItems.length > 0) {
         // Category has items. Render in same way as for GET route
-        res.render("categoryDelete", {
-          title: "Delete Author",
+        res.render("categoryView/delete", {
+          title: `Delete Category: ${results.category.name}`,
           category: results.category,
           categoryItems: results.categoryItems,
         });
@@ -140,8 +152,8 @@ const categoryDeletePost = function (req, res, next) {
 const categoryUpdateGet = function (req, res, next) {
   Category.findById(req.params.id).exec(function (err, category) {
     if (err) return next(err);
-    res.render("categoryForm", {
-      title: "Update category",
+    res.render("categoryView/form", {
+      title: "Update Category",
       category: category,
     });
   });
@@ -160,7 +172,7 @@ const categoryUpdatePost = [
     });
     // Check for any validation errors
     if (!errors.isEmpty()) {
-      res.render("categoryForm", {
+      res.render("categoryView/form", {
         title: "Update Category",
         category: category,
         errors: errors.array(),

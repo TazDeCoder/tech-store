@@ -1,7 +1,7 @@
-extends layout
+extends ../layout
 
 block navItems
-  +link('/browse', 'Home')
+  +link('/', 'Home')
   +link('/browse/items', 'All items')
   +link('/browse/brands', 'All brands')
   +link('/browse/categories', 'All categories')
@@ -15,16 +15,15 @@ block content
   h1= title
 
   div(style='ml-1 mt-1')
+    h4 Items
 
-  h4 Items
-
-  dl
-    each item in categoryItems
-      dt
-        a(href=item.url) #{item.name}
-      dd #{item.description}
-    else
-      p This category has no items
+    dl
+      each item in categoryItems
+        dt
+          a(href=item.url) #{item.name}
+        dd #{item.description}
+      else
+        p This category has no items.
 
   hr
 

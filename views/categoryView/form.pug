@@ -1,7 +1,7 @@
-extends layout 
+extends ../layout 
 
 block navItems
-  +link('/browse', 'Home')
+  +link('/', 'Home')
   +link('/browse/items', 'All items')
   +link('/browse/brands', 'All brands')
   +link('/browse/categories', 'All categories')
@@ -18,7 +18,7 @@ block content
   h1= title
 
   form(method='POST' action='')
-    div(class='my-3')
+    div(class='form-item my-3')
       label.form-label(for='name') Name:
       input#name.form-control(type='text' value=(category ? category.name : '') placeholder='Name of Category' name='name' required='true')
 

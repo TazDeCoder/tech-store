@@ -1,7 +1,7 @@
-extends layout
+extends ../layout
 
 block navItems
-  +link('/browse', 'Home')
+  +link('/', 'Home')
   +link('/browse/items', 'All items')
   +link('/browse/brands', 'All brands')
   +link('/browse/categories', 'All categories', true)
@@ -12,11 +12,11 @@ block navItems
   +link('/browse/item/create', 'Create new item') 
 
 block content
-  h1= title 
+  h1(class="fw-light") #{title} (#[strong #{categoryCount}])
 
   ul(class="p-3")
-  each category in categoryList  
-    li(class="m-3 list-unstyled fs-1 text-center")  
-      a(href=category.url) #{category.name}
-  else
-    li There are no categories.
+    each category in listCategories  
+      li(class="m-3 list-unstyled fs-1 text-center")  
+        a(href=category.url) #{category.name}
+    else
+      li There are no categories.
