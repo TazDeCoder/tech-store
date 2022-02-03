@@ -7,8 +7,6 @@ const categoryController = require("../controllers/categoryController");
 
 /// ITEM ROUTES ///
 
-// GET browse home page
-router.get("/", itemController.itemIndex);
 // GET request for creating an Item
 router.get("/item/create", itemController.itemCreateGet);
 // POST request for creating an Item
