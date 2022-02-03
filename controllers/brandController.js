@@ -1,16 +1,29 @@
+// Third-party libraries
 const async = require("async");
 const { body, validationResult } = require("express-validator");
-
+// Imported models
 const Brand = require("../models/brand");
 const Item = require("../models/item");
 
 const brandList = function (req, res, next) {
-  Brand.find()
-    .sort({ name: 1 })
-    .exec(function (err, listBrands) {
+  async.parallel(
+    {
+      brandCount: function (callback) {
+        Brand.countDocuments({}, callback);
+      },
+      listBrands: function (callback) {
+        Brand.find({}, "name").sort({ name: 1 }).exec(callback);
+      },
+    },
+    function (err, results) {
       if (err) return next(err);
-      res.render("brandList", { title: "Brand List", brandList: listBrands });
-    });
+      res.render("brandView/list", {
+        title: "All Brands",
+        brandCount: results.brandCount,
+        listBrands: results.listBrands,
+      });
+    }
+  );
 };
 
 const brandDetail = function (req, res, next) {
@@ -26,11 +39,11 @@ const brandDetail = function (req, res, next) {
     function (err, results) {
       if (err) return next(err);
       if (!results?.brand) {
-        const err = new Error("Brand not found");
+        const err = new Error("Brand not found, or dosen't exist");
         err.status = 404;
         return next(err);
       }
-      res.render("brandDetail", {
+      res.render("brandView/detail", {
         title: results.brand.name,
         brand: results.brand,
         brandItems: results.brandItems,
@@ -40,7 +53,7 @@ const brandDetail = function (req, res, next) {
 };
 
 const brandCreateGet = function (req, res) {
-  res.render("brandForm", { title: "Create Brand" });
+  res.render("brandView/form", { title: "Create Brand" });
 };
 
 const brandCreatePost = [
@@ -60,19 +73,21 @@ const brandCreatePost = [
     });
     // Check for any validation errors
     if (!errors.isEmpty()) {
-      res.render("brandForm", {
-        title: "Brand Form",
+      res.render("brandView/form", {
+        title: "Create Brand",
         brand: brand,
       });
       return;
     } else {
-      // Data from form is valid
+      // Data provided is valid
       // Check if Brand with same name already exists
       Brand.findOne({ name: req.body.name }).exec(function (err, foundBrand) {
         if (err) return next(err);
-        if (foundBrand) res.redirect(foundBrand.url);
+        if (foundBrand)
+          // Brand exists so redirect to its detail page
+          res.redirect(foundBrand.url);
         else {
-          // Brand saved. Redirect to brand detail page.
+          // Brand doesn't exist. Save brand to database
           brand.save(function (err) {
             if (err) return next(err);
             res.redirect(brand.url);
@@ -95,7 +110,8 @@ const brandDeleteGet = function (req, res, next) {
     },
     function (err, results) {
       if (err) return next(err);
-      res.render("brandDelete", {
+      if (!results?.brand) res.redirect("/browse/brands");
+      res.render("brandView/delete", {
         title: `Delete Brand: ${results.brand.name}`,
         brand: results.brand,
         brandItems: results.brandItems,
@@ -118,7 +134,7 @@ const brandDeletePost = function (req, res, next) {
       if (err) return next(err);
       if (results.brandItems.length > 0) {
         // Brand has items. Render in same way as for GET route
-        res.render("brandDelete", {
+        res.render("brandView/delete", {
           title: `Delete Brand: ${results.brand.name}`,
           brand: results.brand,
           brandItems: results.brandItems,
@@ -138,7 +154,7 @@ const brandDeletePost = function (req, res, next) {
 const brandUpdateGet = function (req, res, next) {
   Brand.findById(req.params.id).exec(function (err, brand) {
     if (err) return next(err);
-    res.render("brandForm", {
+    res.render("brandView/form", {
       title: `Update Brand: ${brand.name}`,
       brand: brand,
     });
@@ -162,30 +178,17 @@ const brandUpdatePost = [
     });
     // Check for any validation errors
     if (!errors.isEmpty()) {
-      res.render("brandForm", {
+      res.render("brandView/form", {
         title: `Update Brand: ${brand.name}`,
         brand: brand,
         errors: errors.array(),
       });
       return;
     } else {
-      // Data from form is valid
-      // Check if Brand with same name already exists
-      Brand.findOne({ name: req.body.name }).exec(function (err, foundBrand) {
+      // Data provided is valid. Update brand
+      Brand.findByIdAndUpdate(req.params.id, brand, {}, function (err, brand) {
         if (err) return next(err);
-        if (foundBrand) res.redirect(foundBrand.url);
-        else {
-          // Brand saved. Redirect to brand detail page
-          Brand.findByIdAndUpdate(
-            req.params.id,
-            brand,
-            {},
-            function (err, brand) {
-              if (err) return next(err);
-              res.redirect(brand.url);
-            }
-          );
-        }
+        res.redirect(brand.url);
       });
     }
   },

@@ -1,7 +1,7 @@
-extends layout
+extends ../layout
 
 block navItems
-  +link('/browse', 'Home')
+  +link('/', 'Home')
   +link('/browse/items', 'All items')
   +link('/browse/brands', 'All brands')
   +link('/browse/categories', 'All categories')
@@ -19,11 +19,11 @@ block content
 
   form(method='POST' action='')
     if(!brand)
-      div(class='my-3')
+      div(class='form-item my-3')
         label.form-label(for='name') Name:
         input#name.form-control(type='text' value=(brand ? brand.name : '') placeholder='Name of Brand' name='name' required='true')
         
-    div(class='my-3')
+    div(class='form-item my-3')
       label.form-label(for='description') Description:
       textarea#description.form-control(class='form-control-lg' type='textarea' placeholder='Description' name='description' required='true') #{brand ? brand.description : ''}
 

@@ -1,7 +1,7 @@
-extends layout
+extends ../layout
 
 block navItems
-  +link('/browse', 'Home')
+  +link('/', 'Home')
   +link('/browse/items', 'All items')
   +link('/browse/brands', 'All brands')
   +link('/browse/categories', 'All categories')
@@ -18,7 +18,6 @@ block content
     p #[strong Delete the following items before attempting to delete this brand]
 
     div(class='ml-2 mt-2')
-
       h4 Items
 
       dl
@@ -32,6 +31,6 @@ block content
     form(method='POST' action='')
       div(class='my-3')
         label.form-label(class='invisible' for='brandid') Brand ID:
-        input#brandid.form-control(type='hidden' name='brandid' required='true' value=brand._id)
+        input#brandid.form-control(type='hidden' name='brandid' value=brand._id required='true')
 
       button.btn.btn-primary(type='submit') Delete
