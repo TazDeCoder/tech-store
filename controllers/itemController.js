@@ -80,13 +80,14 @@ const itemCreatePost = [
     .isLength({ min: 1 })
     .escape(),
   body("released_date", "Released Date must not be empty.")
-    .trim()
-    .isLength({ min: 1 })
-    .escape(),
+    .optional({ checkFalsy: true })
+    .isISO8601()
+    .toDate(),
   body("category.*").escape(),
   // Process request after validation and sanitization
   (req, res, next) => {
     const errors = validationResult(req);
+    console.log(req.file);
     // Create item object
     const item = new Item({
       name: req.body.name,
@@ -95,6 +96,12 @@ const itemCreatePost = [
       released_date: req.body.released_date,
       category: req.body.category,
     });
+    // Optional image
+    if (req.file)
+      item.image = {
+        path: req.file.path,
+        filename: req.file.originalname,
+      };
     // Check for any validation errors
     if (!errors.isEmpty()) {
       async.parallel(
@@ -119,6 +126,7 @@ const itemCreatePost = [
             brands: results.brands,
             categories: results.categories,
             item: item,
+            errors: errors.array(),
           });
         }
       );
@@ -213,9 +221,9 @@ const itemUpdatePost = [
     .isLength({ min: 1 })
     .escape(),
   body("released_date", "Released Date must not be empty.")
-    .trim()
-    .isLength({ min: 1 })
-    .escape(),
+    .optional({ checkFalsy: true })
+    .isISO8601()
+    .toDate(),
   body("category.*").escape(),
   // Process request after validation and sanitization
   (req, res, next) => {
@@ -230,6 +238,12 @@ const itemUpdatePost = [
       number_in_stock: req.body.stock,
       category: req.body.category,
     });
+    // Optional image
+    if (req.file)
+      item.image = {
+        path: req.file.path,
+        filename: req.file.originalname,
+      };
     // Check for any validation errors
     if (!errors.isEmpty()) {
       async.parallel(

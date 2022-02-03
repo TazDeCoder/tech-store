@@ -2,6 +2,7 @@ extends ../layout
 
 block content
   h1= title
+  img(src=item.image.path alt=item.image.filename)
 
   p #[strong Released Date:] #{item.released_date_formatted}
   p #[strong Description:] #{item.description}

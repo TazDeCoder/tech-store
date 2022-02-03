@@ -5,6 +5,10 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const ItemSchema = new Schema({
+  image: {
+    path: String,
+    filename: String,
+  },
   name: {
     type: String,
     required: true,
