@@ -1,31 +1,34 @@
 const express = require("express");
-const path = require("path");
 const router = express.Router();
 
-const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: "./public/data/uploads/",
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1000000,
-  },
-  fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
-      const err = new Error("Please upload a Image");
-      err.status = 404;
-      return cb(err);
-    }
-    cb(null, true);
-  },
-});
+// UNCOMMENT if in DEVELOPMENT mode
+//
+// const path = require("path");
+
+// const multer = require("multer");
+// const storage = multer.diskStorage({
+//   destination: "./public/images/uploads/",
+//   filename: (req, file, cb) => {
+//     cb(
+//       null,
+//       file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+//     );
+//   },
+// });
+// const upload = multer({
+//   storage: storage,
+//   limits: {
+//     fileSize: 1000000,
+//   },
+//   fileFilter(req, file, cb) {
+//     if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+//       const err = new Error("Please upload a Image");
+//       err.status = 404;
+//       return cb(err);
+//     }
+//     cb(null, true);
+//   },
+// });
 
 const itemController = require("../controllers/itemController");
 const brandController = require("../controllers/brandController");
@@ -38,7 +41,7 @@ router.get("/item/create", itemController.itemCreateGet);
 // POST request for creating an Item
 router.post(
   "/item/create",
-  upload.single("uploaded_image"),
+  // upload.single("uploaded_image"),
   itemController.itemCreatePost
 );
 // GET request to delete Item
@@ -50,7 +53,7 @@ router.get("/item/:id/update", itemController.itemUpdateGet);
 // POST request to update Item
 router.post(
   "/item/:id/update",
-  upload.single("uploaded_image"),
+  // upload.single("uploaded_image"),
   itemController.itemUpdatePost
 );
 // GET request for one Item
@@ -58,9 +61,9 @@ router.get("/item/:id", itemController.itemDetail);
 // GET request for list of all Items.
 router.get("/items", itemController.itemList);
 // GET request for image
-router.get("/item/public/data/*", function (req, res) {
+router.get("/item/public/images/uploads/*", function (req, res) {
   const path = req?.params[0];
-  res.sendFile(path, { root: "./public/data" });
+  res.sendFile(path, { root: "./public/images/uploads" });
 });
 
 /// BRAND ROUTES ///

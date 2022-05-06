@@ -16,10 +16,11 @@ block content
       div(class='form-item my-3')
         label.form-label(for='stock') Stock:
         input#stock.form-control(type='number' value=(item ? item.number_in_stock : '') name='stock' required='true')
-    
-    div(class="form-item my-3")        
-      label.form-label(for='uploaded_image') Image: #{item ? item.image.filename : ''}
-      input#uploaded_image.form-control(type="file" name="uploaded_image" accept="image/png, image/jpeg")          
+ 
+    //- UNCOMMENT if in DEVELOPMENT mode
+    //- div(class="form-item my-3")        
+    //-   label.form-label(for='uploaded_image') Image: #{item ? item.image.filename : ''}
+    //-   input#uploaded_image.form-control(type="file" name="uploaded_image" accept="image/png, image/jpeg")          
 
     div(class='form-item my-3')
       label.form-label(for='name') Name:

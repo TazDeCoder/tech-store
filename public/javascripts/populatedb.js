@@ -13,9 +13,9 @@ if (!userArgs[0].startsWith('mongodb')) {
 }
 */
 const async = require("async");
-const Item = require("./models/item");
-const Brand = require("./models/brand");
-const Category = require("./models/category");
+const Item = require("../../models/item");
+const Brand = require("../../models/brand");
+const Category = require("../../models/category");
 
 const mongoose = require("mongoose");
 const mongoDB = userArgs[0];
