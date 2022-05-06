@@ -12,11 +12,11 @@ const browseRouter = require("./routes/browse");
 
 const app = express();
 
-const DEV_DB_URL = "mongodb://localhost/testdb";
+const DEV_DB_URI = "mongodb://localhost:27017/testdb";
 
 // Set up mongoose connection
 const mongoose = require("mongoose");
-const mongoDB = process.env.MONGODB_URL || DEV_DB_URL;
+const mongoDB = process.env.MONGODB_URI || DEV_DB_URI;
 mongoose.connect(mongoDB);
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
