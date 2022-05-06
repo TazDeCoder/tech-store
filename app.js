@@ -10,8 +10,6 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const browseRouter = require("./routes/browse");
 
-require("dotenv").config();
-
 const app = express();
 
 const DEV_DB_URL = "mongodb://localhost/testdb";
