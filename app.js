@@ -3,18 +3,22 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const compression = require("compression");
+const helmet = require("helmet");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const browseRouter = require("./routes/browse");
 
+require("dotenv").config();
+
 const app = express();
 
-const { DATABASE_URL } = require("./config");
+const DEV_DB_URL = "mongodb://localhost/testdb";
 
 // Set up mongoose connection
 const mongoose = require("mongoose");
-const mongoDB = DATABASE_URL;
+const mongoDB = process.env.MONGODB_URL || DEV_DB_URL;
 mongoose.connect(mongoDB);
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -27,6 +31,8 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(compression());
+app.use(helmet());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);

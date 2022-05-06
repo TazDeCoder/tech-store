@@ -87,7 +87,6 @@ const itemCreatePost = [
   // Process request after validation and sanitization
   (req, res, next) => {
     const errors = validationResult(req);
-    console.log(req.file);
     // Create item object
     const item = new Item({
       name: req.body.name,
