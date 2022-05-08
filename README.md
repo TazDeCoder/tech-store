@@ -1,4 +1,9 @@
-# Taz Electronics
+# Tech Store
+
+## Screenshots
+
+<img src="./public/images/screenshots/screenshots-1.png" alt="desktop-screenshot" width="65%"></img>
+<img src="./public/images/screenshots/screenshots-2.png" alt="mobile-screenshot" width="30%"></img>
 
 ## Description
 
